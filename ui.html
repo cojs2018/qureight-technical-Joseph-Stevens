@@ -1,0 +1,167 @@
+<html>
+
+<!-- This is the User Interface of my project -->
+
+<head>
+	
+	<meta charset="UTF-8">
+	
+	<!-- CSS style sheet -->
+	<style>
+		
+		/* Tab style */
+		.tab {
+			overflow: hidden;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+		}
+		
+		/* Tab button style */
+		.tab button {
+			background-color: inherit;
+			float: left;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			padding: 14px 16px;
+			transition: 0.3s;
+		}
+		
+		/* Hover status style for tab button */
+		.tab button:hover {
+			background-color: #ddd;
+		}
+		
+		/* Active status style for tab button */
+		.tab button.active {
+			background-color: #ccc;
+		}
+		
+		/* Style of tab content */
+		.tabcontent {
+			display: none;
+			padding: 6px 12px;
+			border: 1px solid #ccc;
+			border-top: none;
+		}
+		
+		/* Table style */
+		table, th, td {
+			border: 1px solid black;
+		}
+		
+	</style>
+	
+	<script>
+		function openTab(event, request) {
+			/*
+				Function
+				--------
+				Opens tabs on request of the user.
+				
+				Parameter
+				---------
+				event: Object, Event triggered by user.
+				
+				request: String, Request made by user and name of the tab.
+				
+				Returns
+				-------
+				None
+			 */
+			 
+			 try {
+			 
+				 //Declare variables
+				 var i, tabcontent, tablinks;
+				 
+				 //Get elements where class="tabcontent" and hide them
+				 tabcontent = document.getElementsByClassName("tabcontent");
+				 for (i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = "none";
+				 }
+				 
+				 // Get elements where class="tablinks" and remove "active"
+				 tablinks = document.getElementsByClassName("tabcontent");
+				 for (i = 0; i < tablinks.length; i++) {
+					tablinks[i].className = tablinks[i].className.replace(" active", "");
+				 }
+				 
+				 //Show current tab, and set class to active to button that opens tab
+				 document.getElementById(request).style.display = "block";
+				 event.currentTarget.className += " active";
+			 }
+			 catch(exe){
+				alert(exe);
+			 }
+			 
+			
+		}
+	</script>
+	
+</head>
+
+<body>
+	<!-- For this project there needs to be the 4 features of RESTful APIs -->
+	<!--   * GET : List all patients and show to the user -->
+	<!--   * POST: Add details of new patients -->
+	<!--   * DELETE: Remove patients -->
+	<!--   * GET: Make queries -->
+		   
+	
+	<!-- Formulate each feature in tabed environments -->
+	<!-- Tab links -->
+	<div class="tab">
+		<button class="tablinks" onclick="openTab(event, 'LIST')">List All Patients</button>
+		<button class="tablinks" onclick="openTab(event, 'ADD')">Add Patient Records</button>
+		<button class="tablinks" onclick="openTab(event, 'QUERY')">Query Patient Records</button>
+	</div>
+	
+	<!-- A user should be able to edit and delete patients by clicking on a listed patient either from the whole list or through a query -->
+	
+	<!-- Tab content -->
+	<div id="LIST" class="tabcontent">
+		<table id="allPatientsTable" style="width:100%">
+			
+			<!-- header row -->
+			<tr>
+				<th>ID</th>
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Middle Names</th>
+				<th>Age (Months)</th>
+				<th>Height (Centremetres)</th>
+				<th>Physician Notes</th>
+			</tr>
+			
+		</table>
+	</div>
+	
+	<div id="ADD" class="tabcontent">
+		<p> Please enter the following... </p>
+		</br>
+		<p>Last name:
+		<input id="txtFirstName">
+	<div>
+	
+	
+	<div id="QUERY" class="tabcontent">
+		<table id="queryPatientsTable" style="width:100%">
+			
+			<!-- header row -->
+			<tr>
+				<th>ID</th>
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Middle Names</th>
+				<th>Age (Months)</th>
+				<th>Height (Centremetres)</th>
+				<th>Physician Notes</th>
+			</tr>
+			
+		</table>
+	</div>
+	
+</body>
+
+</html>
