@@ -1,0 +1,22 @@
+{
+  "name": "qureight-technical-joseph-stevens",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cojs2018/qureight-technical-Joseph-Stevens.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cojs2018/qureight-technical-Joseph-Stevens/issues"
+  },
+  "homepage": "https://github.com/cojs2018/qureight-technical-Joseph-Stevens#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
