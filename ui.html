@@ -52,6 +52,131 @@
 		
 	</style>
 	
+	<title> Qureight hospital </title>
+	
+</head>
+
+<body>
+	
+	<!-- Header -->
+	<h1> Qureight hospital </h1>
+	
+	<!-- For this project there needs to be the 4 features of RESTful APIs -->
+	<!--   * GET : List all patients and show to the user -->
+	<!--   * POST: Add details of new patients -->
+	<!--   * DELETE: Remove patients -->
+	<!--   * GET: Make queries -->
+		   
+	
+	<!-- Formulate each feature in tabed environments -->
+	<!-- Tab links -->
+	<div class="tab">
+		<button class="tablinks" onclick="openTab(event, 'LIST')">List All Patients</button>
+		<button class="tablinks" onclick="openTab(event, 'ADD')">Add Patient Records</button>
+		<button class="tablinks" onclick="openTab(event, 'SEARCH')">Query Patient Records</button>
+	</div>
+	
+	<!-- A user should be able to edit and delete patients by clicking on a listed patient either from the whole list or through a query -->
+	
+	<!-- Tab content -->
+	<div id="LIST" class="tabcontent">
+		<table id="allPatientsTable" style="width:100%">
+			
+			<!-- header row -->
+			<tr>
+				<th>ID</th>
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Middle Names</th>
+				<th>Age (Months)</th>
+				<th>Height (Centremetres)</th>
+				<th>Physician Notes</th>
+			</tr>
+			
+		</table>
+	</div>
+	
+	<div id="ADD" class="tabcontent">
+		<hr>
+		<h1>Add New Patient </h1>
+		<hr>
+		
+		<form action="http://localhost:3000/patient" method="POST">
+			<div class="form-group">
+				<label for="Last Name">Last Name</label></br>
+				<input class="form-control" name="lastName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="First Name">First Name</label></br>
+				<input class="form-control" name="firstName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Middle Name">Middle Names</label></br>
+				<input class="form-control" name="middleName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Age">Age (months)</label></br>
+				<input class="form-control" name="age"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Height">Height (centremetres)</label></br>
+				<input class="form-control" name="lastName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Notes">Physician Notes</label></br>
+				<textarea class="form-control" name="notes" rows="6" cols="50"></textarea></br></br>
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+	</div>
+	
+	
+	<div id="SEARCH" class="tabcontent">
+		<hr>
+		<h1>Query </h1>
+		<hr>
+		
+		<form action="http://localhost:3000/patient/:lastName/:firstName/:middleNames/:age/:height/:Notes" method="GET">
+			<div class="form-group">
+				<label for="Last Name">Last Name</label></br>
+				<input class="form-control" name="lastName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="First Name">First Name</label></br>
+				<input class="form-control" name="firstName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Middle Names">Middle Name</label></br>
+				<input class="form-control" name="middleNames"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Age">Age (months)</label></br>
+				<input class="form-control" name="age"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Height">Height (centremetres)</label></br>
+				<input class="form-control" name="lastName"></br></br>
+			</div>
+			
+			<div class="form-group">
+				<label for="Notes">Physician Notes</label></br>
+				<textarea class="form-control" name="notes" rows="6" cols="50"></textarea></br></br>
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Search</button>
+		</form>
+	</div>
+	
 	<script>
 		function openTab(event, request) {
 			/*
@@ -90,77 +215,224 @@
 				 //Show current tab, and set class to active to button that opens tab
 				 document.getElementById(request).style.display = "block";
 				 event.currentTarget.className += " active";
+				 
+				 if (request == "LIST") { //If LIST trigger GET
+					listRecords();
+				 }
 			 }
 			 catch(exe){
 				alert(exe);
 			 }
-			 
-			
 		}
+		
+		function listRecords() {
+			/*
+				Function
+				--------
+				Loads all patients with xml http request and displays each record within the table
+				
+				Parameters
+				----------
+				None
+				
+				Returns
+				-------
+				None
+			*/
+			
+			const xhttp = new XMLHttpRequest();
+			
+			//Open http request to local host
+			xhttp.open("GET", "http://localhost:3000/patients", false);
+			xhttp.send();
+			
+			//Parse from JSON
+			const patients = JSON.parse(xhttp.responseText);
+			
+			allPatientsTable = document.getElementById('allPatientsTable');
+			
+			//For each patient add to the table
+			var i = 0; //Id iterator
+			for(let patient of patients) {
+				//Create new empty table row
+				var row = allPatientsTable.insertRow(i);
+				
+				//Populate new row with data from taken from the JSON Query
+				var cellId = row.insertCell(0);
+				cellId.innerHTML = (i).toString();
+				i++;
+				
+				var cellLN = row.insertCell(1);
+				cellLN.innerHTML = patient.lastName;
+				
+				var cellFN = row.insertCell(2);
+				cellFN.innerHTML = patient.firstName;
+				
+				var cellMN = row.insertCell(3);
+				cellMN.innerHTML = patient.middleNames;
+				
+				var cellAge = row.insertCell(4);
+				cellAge.innerHTML = patient.age;
+				
+				var cellHeight = row.insertCell(5);
+				cellHeight.innerHTML = patient.height;
+				
+				var cellNotes = row.insert(6);
+				cellHeight.innerHTML = patient.notes;
+				
+				//Add event listener to row to function called deleteOrEdit
+				row.addEventListener("click", deleteOrEdit(row.rowIndex));
+			}
+		}
+		
+		function deleteOrEdit(index) {
+			/*
+				Function
+				--------
+				Propts user to delete patient, edit patient or cancel request
+				
+				Parameters
+				----------
+				index: int, index of row
+				
+				Returns
+				-------
+				None
+			
+			*/
+			var prmpt = prompt("Would you like to delete or edit the patient?")
+			
+			if (prmpt == 'delete') {
+				//Call to delete patient
+			}
+			else if (prmpt == 'edit') {
+				//Call to edit patient
+			}
+			else {
+				//Cancel
+				return;
+			}
+		}
+		
+		function deletePatient(index) {
+			/*
+				Function
+				--------
+				Calls to delete patient from records.
+				
+				Parameters
+				----------
+				index: int, index of row
+				
+				Returns
+				-------
+				None
+			
+			*/
+			
+			//Lambda for calling HTTP request
+			const deletePatient = (lastName, firstName, middleNames, age, height, notes) => {
+				const xhttp = new XMLHttpRequest();
+				
+				//Open and send request for deletion
+				xttp.open("DELETE", 'http://localhost:3000/patient/${lastName}/${firstName}/${middleNames}/${age}/${height}/${notes}', false);
+				xttp.send();
+				
+				//Reload page
+				location.reload();
+			}
+			
+			
+			//Confirm with user
+			var result = confirm("Please confirm you would like to delete the patient from the records.")
+			
+			//If confimed
+			if (result) {
+				
+				//Get row
+				var row = documents.getElementById("patientsTable").rows[index];
+				
+				//Get data from cells
+				lastName = row.cells[1].innerHTML; //cell 0 is id
+				firstName = row.cells[2].innerHTML;
+				middleNames = row.cells[3].innerHTML;
+				age = row.cells[4].innerHTML;
+				height = row.cells[5].innerHTML;
+				notes = row.cells[6].innerHTML;
+				
+				//Call lambda function to delete patient from records and refresh the page
+				deletePatient(lastName, firstName, middleNames, age, height, notes);
+				
+			}
+			
+			//Else return cancelation
+			return;
+		}
+		
+		function editPatient(index) {
+			/*
+				Function
+				--------
+				Calls to edit patient data.
+				
+				Parameters
+				----------
+				index: int, index of row
+				
+				Returns
+				-------
+				None
+			
+			*/
+			
+			//Confirm with user
+			var result = confirm("Please confirm you would like to edit the patient records.")
+			
+			//If confimed
+			if (result) {
+				
+				//Get row
+				var row = documents.getElementById("patientsTable").rows[index];
+				
+				//For each cell, convert to textbox
+				for(let i = 1; i < row.cells.length; i++) {
+					cell = row.cells[i]
+					datum = cell.innerHTML;
+					
+					cell.innerHTML = '<input id="txt' + (i).toString() + '" value="' + datum + '">'
+				}
+				
+				//Add temporary cell at end with button
+				var cellSubmit = row.insertCell(7);
+				cellSubmit.innerHTML = '<button type="submit" id="bttnSubmit">Submit</button>'
+				
+				//Get button and add event listener
+				var submit = document.getElementById("bttnSubmit");
+				submit.addEventListener("click", function () {
+					//Get data from row
+					var row = documents.getElementById("patientsTable").rows[index];
+					
+					var lastName = document.getElementById('txt1').value;
+					var firstName = document.getElementById('txt2').value;
+					var middleNames = document.getElementById('txt3').value;
+					var age = document.getElementById('txt4').value;
+					var height = document.getElementById('txt5').value;
+					var notes = document.getElementById('txt6').value;
+					
+					const xhttp = new XMLHttpRequest();
+					
+					//Open HTTP request to edit the patient's data
+					xhttp.open("POST", 'http://localhost:3000/patient/${lastName}/${firstName}/${middleNames}/${age}/${height}/${notes}', false);
+					xhttp.send();
+					
+					//Reload page
+					location.reload();
+				});
+				
+			}
+		}
+		
 	</script>
-	
-</head>
-
-<body>
-	<!-- For this project there needs to be the 4 features of RESTful APIs -->
-	<!--   * GET : List all patients and show to the user -->
-	<!--   * POST: Add details of new patients -->
-	<!--   * DELETE: Remove patients -->
-	<!--   * GET: Make queries -->
-		   
-	
-	<!-- Formulate each feature in tabed environments -->
-	<!-- Tab links -->
-	<div class="tab">
-		<button class="tablinks" onclick="openTab(event, 'LIST')">List All Patients</button>
-		<button class="tablinks" onclick="openTab(event, 'ADD')">Add Patient Records</button>
-		<button class="tablinks" onclick="openTab(event, 'QUERY')">Query Patient Records</button>
-	</div>
-	
-	<!-- A user should be able to edit and delete patients by clicking on a listed patient either from the whole list or through a query -->
-	
-	<!-- Tab content -->
-	<div id="LIST" class="tabcontent">
-		<table id="allPatientsTable" style="width:100%">
-			
-			<!-- header row -->
-			<tr>
-				<th>ID</th>
-				<th>Last Name</th>
-				<th>First Name</th>
-				<th>Middle Names</th>
-				<th>Age (Months)</th>
-				<th>Height (Centremetres)</th>
-				<th>Physician Notes</th>
-			</tr>
-			
-		</table>
-	</div>
-	
-	<div id="ADD" class="tabcontent">
-		<p> Please enter the following... </p>
-		</br>
-		<p>Last name:
-		<input id="txtFirstName">
-	<div>
-	
-	
-	<div id="QUERY" class="tabcontent">
-		<table id="queryPatientsTable" style="width:100%">
-			
-			<!-- header row -->
-			<tr>
-				<th>ID</th>
-				<th>Last Name</th>
-				<th>First Name</th>
-				<th>Middle Names</th>
-				<th>Age (Months)</th>
-				<th>Height (Centremetres)</th>
-				<th>Physician Notes</th>
-			</tr>
-			
-		</table>
-	</div>
 	
 </body>
 
