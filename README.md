@@ -18,7 +18,7 @@ To get started, type the following code into the bash terminal:
 
 ```bash
 cd <type your chosen directory here>
-npm server
+node server
 ```
 
 Then open ui.html in your browser.
