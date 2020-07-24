@@ -8,6 +8,16 @@
 	
 	<!-- CSS style sheet -->
 	<style>
+	
+		/* Header font style */
+		h1 {
+			font-family: Candara;
+		}
+		
+		/* Label font style */
+		label {
+			font-family: Calibri;
+		}
 		
 		/* Tab style */
 		.tab {
@@ -46,8 +56,24 @@
 		}
 		
 		/* Table style */
-		table, th, td {
-			border: 1px solid black;
+		table {
+			border-collapse: collapse;
+		}
+		
+		table, td {
+			border: 1px solid grey;
+			font-family: Calibri;
+			padding: 15px;
+		}
+		
+		th {
+			background-color: #6699ff;
+			padding: 15px;
+		}
+		
+		/* Hover style for table row */
+		tr:hover {
+			background-color: #ffff99;
 		}
 		
 	</style>
@@ -88,12 +114,16 @@
 				<th>Last Name</th>
 				<th>First Name</th>
 				<th>Middle Names</th>
-				<th>Age (Months)</th>
-				<th>Height (Centremetres)</th>
+				<th>Age (months)</th>
+				<th>Height (cm)</th>
 				<th>Physician Notes</th>
+				<th>Select</th>
 			</tr>
 			
 		</table>
+		</br>
+		<button onclick="deletePatient()">Delete<button>
+		<button onclick="editPatient()">Edit<button>
 	</div>
 	
 	<div id="ADD" class="tabcontent">
@@ -114,7 +144,7 @@
 			
 			<div class="form-group">
 				<label for="Middle Name">Middle Names</label></br>
-				<input class="form-control" name="middleName"></br></br>
+				<input class="form-control" name="middleNames"></br></br>
 			</div>
 			
 			<div class="form-group">
@@ -124,7 +154,7 @@
 			
 			<div class="form-group">
 				<label for="Height">Height (centremetres)</label></br>
-				<input class="form-control" name="lastName"></br></br>
+				<input class="form-control" name="height"></br></br>
 			</div>
 			
 			<div class="form-group">
@@ -142,38 +172,38 @@
 		<h1>Query </h1>
 		<hr>
 		
-		<form action="http://localhost:3000/patient/:lastName/:firstName/:middleNames/:age/:height/:Notes" method="GET">
+		<form>
 			<div class="form-group">
 				<label for="Last Name">Last Name</label></br>
-				<input class="form-control" name="lastName"></br></br>
+				<input class="form-control" id="QlastName"></br></br>
 			</div>
 			
 			<div class="form-group">
 				<label for="First Name">First Name</label></br>
-				<input class="form-control" name="firstName"></br></br>
+				<input class="form-control" id="QfirstName"></br></br>
 			</div>
 			
 			<div class="form-group">
 				<label for="Middle Names">Middle Name</label></br>
-				<input class="form-control" name="middleNames"></br></br>
+				<input class="form-control" id="QmiddleNames"></br></br>
 			</div>
 			
 			<div class="form-group">
 				<label for="Age">Age (months)</label></br>
-				<input class="form-control" name="age"></br></br>
+				<input class="form-control" id="Qage"></br></br>
 			</div>
 			
 			<div class="form-group">
 				<label for="Height">Height (centremetres)</label></br>
-				<input class="form-control" name="lastName"></br></br>
+				<input class="form-control" id="Qheight"></br></br>
 			</div>
 			
 			<div class="form-group">
 				<label for="Notes">Physician Notes</label></br>
-				<textarea class="form-control" name="notes" rows="6" cols="50"></textarea></br></br>
+				<textarea class="form-control" id="Qnotes" rows="6" cols="50"></textarea></br></br>
 			</div>
 			
-			<button type="submit" class="btn btn-primary">Search</button>
+			<button onclick="listQuery()">Search</button>
 		</form>
 	</div>
 	
@@ -249,72 +279,129 @@
 			//Parse from JSON
 			const patients = JSON.parse(xhttp.responseText);
 			
+			//alert(patients[0].height);
+			
 			allPatientsTable = document.getElementById('allPatientsTable');
 			
+			//Clear existing data from table
+			let i = 1; 
+			while(i < allPatientsTable.rows.length) {
+				allPatientsTable.deleteRow(i);
+			}
+			
 			//For each patient add to the table
-			var i = 0; //Id iterator
-			for(let patient of patients) {
+			for(let i = 0; i < patients.length; i++) {
 				//Create new empty table row
-				var row = allPatientsTable.insertRow(i);
+				var row = allPatientsTable.insertRow(i+1);
 				
 				//Populate new row with data from taken from the JSON Query
 				var cellId = row.insertCell(0);
 				cellId.innerHTML = (i).toString();
-				i++;
 				
 				var cellLN = row.insertCell(1);
-				cellLN.innerHTML = patient.lastName;
+				cellLN.innerHTML = patients[i].lastName;
 				
 				var cellFN = row.insertCell(2);
-				cellFN.innerHTML = patient.firstName;
+				cellFN.innerHTML = patients[i].firstName;
 				
 				var cellMN = row.insertCell(3);
-				cellMN.innerHTML = patient.middleNames;
+				cellMN.innerHTML = patients[i].middleNames;
 				
 				var cellAge = row.insertCell(4);
-				cellAge.innerHTML = patient.age;
+				cellAge.innerHTML = patients[i].age;
 				
 				var cellHeight = row.insertCell(5);
-				cellHeight.innerHTML = patient.height;
+				cellHeight.innerHTML = patients[i].height;
 				
-				var cellNotes = row.insert(6);
-				cellHeight.innerHTML = patient.notes;
+				var cellNotes = row.insertCell(6);
+				cellNotes.innerHTML = patients[i].notes;
 				
-				//Add event listener to row to function called deleteOrEdit
-				row.addEventListener("click", deleteOrEdit(row.rowIndex));
+				var cell7 = row.insertCell(7);
+				cell7.innerHTML = '<input type="radio" class="radioButton" id="radioSelect" value="' + (i).toString() + '">';
 			}
 		}
 		
-		function deleteOrEdit(index) {
+		function listQuery() {
 			/*
 				Function
 				--------
-				Propts user to delete patient, edit patient or cancel request
+				Loads all patients that match the query with xml http request and displays each record within the table
 				
 				Parameters
 				----------
-				index: int, index of row
+				None
 				
 				Returns
 				-------
 				None
-			
 			*/
-			var prmpt = prompt("Would you like to delete or edit the patient?")
 			
-			if (prmpt == 'delete') {
-				//Call to delete patient
-			}
-			else if (prmpt == 'edit') {
-				//Call to edit patient
-			}
-			else {
-				//Cancel
+			//Get inquired data
+			qLastName = document.getElementById("QlastName")
+			qFirstName = document.getElementById("QfastName")
+			qMiddleNames = document.getElementById("QmiddleNames")
+			qAge = document.getElementById("Qage")
+			qHeight = document.getElementById("Qheight")
+			qNotes = document.getElementById("Qnotes")
+			
+			const xhttp = new XMLHttpRequest();
+			
+			//Open http request to local host
+			xhttp.open("GET", 'http://localhost:3000/patient/'+ lastName + '"/"' + firstName + '"/"' + middleNames + '"/"' + age + '"/"' + height + '"/"' + notes, false);
+			xhttp.send();
+			
+			//Parse from JSON
+			const patients = JSON.parse(xhttp.responseText);
+			
+			if(patients.length == 0) {
+				alert('No patients were found with the data');
 				return;
+			}
+			
+			//Go back to table
+			
+			
+			allPatientsTable = document.getElementById('allPatientsTable');
+			
+			//Clear existing data from table
+			let i = 1; 
+			while(i < allPatientsTable.rows.length) {
+				allPatientsTable.deleteRow(i);
+			}
+			
+			//For each patient add to the table
+			for(let i = 0; i < patients.length; i++) {
+				//Create new empty table row
+				var row = allPatientsTable.insertRow(i+1);
+				
+				//Populate new row with data from taken from the JSON Query
+				var cellId = row.insertCell(0);
+				cellId.innerHTML = (i).toString();
+				
+				var cellLN = row.insertCell(1);
+				cellLN.innerHTML = patients[i].lastName;
+				
+				var cellFN = row.insertCell(2);
+				cellFN.innerHTML = patients[i].firstName;
+				
+				var cellMN = row.insertCell(3);
+				cellMN.innerHTML = patients[i].middleNames;
+				
+				var cellAge = row.insertCell(4);
+				cellAge.innerHTML = patients[i].age;
+				
+				var cellHeight = row.insertCell(5);
+				cellHeight.innerHTML = patients[i].height;
+				
+				var cellNotes = row.insertCell(6);
+				cellNotes.innerHTML = patients[i].notes;
+				
+				var cell7 = row.insertCell(7);
+				cell7.innerHTML = '<input type="radio" class="radioButton" id="radioSelect" value="' + (i).toString() + '">';
 			}
 		}
 		
-		function deletePatient(index) {
+		function deletePatient() {
 			/*
 				Function
 				--------
@@ -322,7 +409,7 @@
 				
 				Parameters
 				----------
-				index: int, index of row
+				None
 				
 				Returns
 				-------
@@ -334,23 +421,37 @@
 			const deletePatient = (lastName, firstName, middleNames, age, height, notes) => {
 				const xhttp = new XMLHttpRequest();
 				
-				//Open and send request for deletion
-				xttp.open("DELETE", 'http://localhost:3000/patient/${lastName}/${firstName}/${middleNames}/${age}/${height}/${notes}', false);
-				xttp.send();
+				var hostStr = 'http://localhost:3000/patient/"' + lastName + '"/"' + firstName + '"/"' + middleNames + '"';
 				
-				//Reload page
-				location.reload();
+				//Open and send request for deletion
+				xhttp.open("DELETE", hostStr, false);
+				xhttp.send();
+				
 			}
 			
 			
 			//Confirm with user
 			var result = confirm("Please confirm you would like to delete the patient from the records.")
 			
+			//Get index of selected row
+			const table = document.getElementById("allPatientsTable");
+			const rows = table.rows;
+			
+			var index = -1;
+			var radios = document.getElementsByClassName("radioButton");
+			for(let i = 0; i < radios.length; i++) {
+				var radio = radios[i];
+				
+				if (radio.checked == true) {
+					index = i+1;
+				}
+			}
+			
 			//If confimed
-			if (result) {
+			if (result && index > 0) {
 				
 				//Get row
-				var row = documents.getElementById("patientsTable").rows[index];
+				var row = document.getElementById("allPatientsTable").rows[index];
 				
 				//Get data from cells
 				lastName = row.cells[1].innerHTML; //cell 0 is id
@@ -360,16 +461,24 @@
 				height = row.cells[5].innerHTML;
 				notes = row.cells[6].innerHTML;
 				
+				//Remove from table
+				table.deleteRow(index);
+				
 				//Call lambda function to delete patient from records and refresh the page
 				deletePatient(lastName, firstName, middleNames, age, height, notes);
 				
+				alert('Patient has been deleted');
+				
+			}
+			else if(index == -1) {
+				alert('ERROR!: Please select a row before clicking delete.');
 			}
 			
 			//Else return cancelation
 			return;
 		}
 		
-		function editPatient(index) {
+		function editPatient() {
 			/*
 				Function
 				--------
@@ -377,7 +486,7 @@
 				
 				Parameters
 				----------
-				index: int, index of row
+				None.
 				
 				Returns
 				-------
@@ -386,31 +495,45 @@
 			*/
 			
 			//Confirm with user
-			var result = confirm("Please confirm you would like to edit the patient records.")
+			var result = confirm("Please confirm you would like to edit the patient records.");
+			
+			//Get index of selected row
+			const table = document.getElementById("allPatientsTable");
+			const rows = table.rows;
+			
+			var index = -1;
+			var radios = document.getElementsByClassName("radioButton");
+			for(let i = 0; i < radios.length; i++) {
+				var radio = radios[i];
+				
+				if (radio.checked == true) {
+					index = i+1;
+				}
+			}
 			
 			//If confimed
-			if (result) {
+			if (result && index > 0) {
 				
 				//Get row
-				var row = documents.getElementById("patientsTable").rows[index];
+				var row = document.getElementById("allPatientsTable").rows[index];
 				
 				//For each cell, convert to textbox
 				for(let i = 1; i < row.cells.length; i++) {
-					cell = row.cells[i]
+					cell = row.cells[i];
 					datum = cell.innerHTML;
 					
-					cell.innerHTML = '<input id="txt' + (i).toString() + '" value="' + datum + '">'
+					cell.innerHTML = '<input id="txt' + (i).toString() + '" value="' + datum + '">';
 				}
 				
 				//Add temporary cell at end with button
-				var cellSubmit = row.insertCell(7);
-				cellSubmit.innerHTML = '<button type="submit" id="bttnSubmit">Submit</button>'
+				var cellSubmit = row.cells[7];
+				cellSubmit.innerHTML = '<button type="submit" id="bttnSubmit">Submit</button>';
 				
 				//Get button and add event listener
 				var submit = document.getElementById("bttnSubmit");
 				submit.addEventListener("click", function () {
 					//Get data from row
-					var row = documents.getElementById("patientsTable").rows[index];
+					var row = document.getElementById("allPatientsTable").rows[index];
 					
 					var lastName = document.getElementById('txt1').value;
 					var firstName = document.getElementById('txt2').value;
@@ -419,17 +542,54 @@
 					var height = document.getElementById('txt5').value;
 					var notes = document.getElementById('txt6').value;
 					
+					//Delete row from table
+					table.deleteRow(index);
+					
+					//Insert edited row back into table
+					//Create new empty table row
+					var row = table.insertRow(index);
+					
+					//Populate new row with data from taken from the JSON Query
+					var cellId = row.insertCell(0);
+					cellId.innerHTML = (index).toString();
+					
+					var cellLN = row.insertCell(1);
+					cellLN.innerHTML = lastName;
+					
+					var cellFN = row.insertCell(2);
+					cellFN.innerHTML = firstName;
+					
+					var cellMN = row.insertCell(3);
+					cellMN.innerHTML = middleNames;
+					
+					var cellAge = row.insertCell(4);
+					cellAge.innerHTML = age;
+					
+					var cellHeight = row.insertCell(5);
+					cellHeight.innerHTML = height;
+					
+					var cellNotes = row.insertCell(6);
+					cellNotes.innerHTML = notes;
+					
+					var cell7 = row.insertCell(7);
+					cell7.innerHTML = '<input type="radio" id="radioSelect' + (index).toString() + '" value="' + (index).toString() + '">';
+					
 					const xhttp = new XMLHttpRequest();
 					
+					var hostStr = 'http://localhost:3000/patient/"' + lastName + '"/"' + firstName + '"/"' + middleNames + '"/"' + age + '"/"' + height + '"/"' + notes;
+					
 					//Open HTTP request to edit the patient's data
-					xhttp.open("POST", 'http://localhost:3000/patient/${lastName}/${firstName}/${middleNames}/${age}/${height}/${notes}', false);
+					xhttp.open("PUT", hostStr, false);
 					xhttp.send();
 					
-					//Reload page
-					location.reload();
 				});
 				
 			}
+			else if(index == -1) {
+				alert('ERROR!: Please select a row before clicking edit.');
+			}
+			
+			return;
 		}
 		
 	</script>
