@@ -17,7 +17,7 @@ This application depends on node.js and express being installed into your OS.
 To get started, type the following code into the bash terminal:
 
 ```bash
-cd <type you chosen directory here>
+cd <type your chosen directory here>
 npm server
 ```
 
