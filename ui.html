@@ -336,68 +336,83 @@
 				None
 			*/
 			
-			//Get inquired data
-			qLastName = document.getElementById("QlastName")
-			qFirstName = document.getElementById("QfastName")
-			qMiddleNames = document.getElementById("QmiddleNames")
-			qAge = document.getElementById("Qage")
-			qHeight = document.getElementById("Qheight")
-			qNotes = document.getElementById("Qnotes")
+			try {
 			
-			const xhttp = new XMLHttpRequest();
-			
-			//Open http request to local host
-			xhttp.open("GET", 'http://localhost:3000/patient/'+ lastName + '"/"' + firstName + '"/"' + middleNames + '"/"' + age + '"/"' + height + '"/"' + notes, false);
-			xhttp.send();
-			
-			//Parse from JSON
-			const patients = JSON.parse(xhttp.responseText);
-			
-			if(patients.length == 0) {
-				alert('No patients were found with the data');
-				return;
+				//Get inquired data
+				qLastName = document.getElementById("QlastName").value;
+				qFirstName = document.getElementById("QfirstName").value;
+				qMiddleNames = document.getElementById("QmiddleNames").value;
+				qAge = document.getElementById("Qage").value;
+				qHeight = document.getElementById("Qheight").value;
+				qNotes = document.getElementById("Qnotes").value;
+				
+				const xhttp = new XMLHttpRequest();
+				
+				//Open http request to local host
+				xhttp.open("GET", 'http://localhost:3000/patient/'+ qLastName + '"/"' + qFirstName + '"/"' + qMiddleNames + '"/"' + qAge + '"/"' + qHeight + '"/"' + qNotes, false);
+				xhttp.send();
+				
+				//Parse from JSON
+				const patients = JSON.parse(xhttp.responseText);
+				
+				if(patients.length == 0) {
+					alert('No patients were found with the data');
+					return;
+				}
+				
+				//Go back to table
+				
+				//Get elements where class="tabcontent" and hide them
+				var tabcontent = document.getElementsByClassName("tabcontent");
+				for (let j = 0; j < tabcontent.length; j++) {
+					tabcontent[j].style.display = "none";
+				}
+					 
+				document.getElementById('SEARCH').className.replace(" active", "")
+				document.getElementById('LIST').style.display = "block";
+				event.currentTarget.className += " active";
+				
+				allPatientsTable = document.getElementById('allPatientsTable');
+				
+				//Clear existing data from table
+				let i = 1; 
+				while(i < allPatientsTable.rows.length) {
+					allPatientsTable.deleteRow(i);
+				}
+				
+				//For each patient add to the table
+				for(let i = 0; i < patients.length; i++) {
+					//Create new empty table row
+					var row = allPatientsTable.insertRow(i+1);
+					
+					//Populate new row with data from taken from the JSON Query
+					var cellId = row.insertCell(0);
+					cellId.innerHTML = (i).toString();
+					
+					var cellLN = row.insertCell(1);
+					cellLN.innerHTML = patients[i].lastName;
+					
+					var cellFN = row.insertCell(2);
+					cellFN.innerHTML = patients[i].firstName;
+					
+					var cellMN = row.insertCell(3);
+					cellMN.innerHTML = patients[i].middleNames;
+					
+					var cellAge = row.insertCell(4);
+					cellAge.innerHTML = patients[i].age;
+					
+					var cellHeight = row.insertCell(5);
+					cellHeight.innerHTML = patients[i].height;
+					
+					var cellNotes = row.insertCell(6);
+					cellNotes.innerHTML = patients[i].notes;
+					
+					var cell7 = row.insertCell(7);
+					cell7.innerHTML = '<input type="radio" class="radioButton" id="radioSelect" value="' + (i).toString() + '">';
+				}
 			}
-			
-			//Go back to table
-			
-			
-			allPatientsTable = document.getElementById('allPatientsTable');
-			
-			//Clear existing data from table
-			let i = 1; 
-			while(i < allPatientsTable.rows.length) {
-				allPatientsTable.deleteRow(i);
-			}
-			
-			//For each patient add to the table
-			for(let i = 0; i < patients.length; i++) {
-				//Create new empty table row
-				var row = allPatientsTable.insertRow(i+1);
-				
-				//Populate new row with data from taken from the JSON Query
-				var cellId = row.insertCell(0);
-				cellId.innerHTML = (i).toString();
-				
-				var cellLN = row.insertCell(1);
-				cellLN.innerHTML = patients[i].lastName;
-				
-				var cellFN = row.insertCell(2);
-				cellFN.innerHTML = patients[i].firstName;
-				
-				var cellMN = row.insertCell(3);
-				cellMN.innerHTML = patients[i].middleNames;
-				
-				var cellAge = row.insertCell(4);
-				cellAge.innerHTML = patients[i].age;
-				
-				var cellHeight = row.insertCell(5);
-				cellHeight.innerHTML = patients[i].height;
-				
-				var cellNotes = row.insertCell(6);
-				cellNotes.innerHTML = patients[i].notes;
-				
-				var cell7 = row.insertCell(7);
-				cell7.innerHTML = '<input type="radio" class="radioButton" id="radioSelect" value="' + (i).toString() + '">';
+			catch(exe){
+				alert(exe);
 			}
 		}
 		
@@ -578,10 +593,8 @@
 					
 					var hostStr = 'http://localhost:3000/patient/"' + lastName + '"/"' + firstName + '"/"' + middleNames + '"/"' + age + '"/"' + height + '"/"' + notes;
 					
-					//Open HTTP request to edit the patient's data
-					xhttp.open("PUT", hostStr, false);
+					xhttp.open("PUT",hostStr , false);
 					xhttp.send();
-					
 				});
 				
 			}

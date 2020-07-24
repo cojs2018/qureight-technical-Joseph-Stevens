@@ -93,13 +93,12 @@ app.delete('/patient/:lastName/:firstName/:middleNames', (req, res) => {
 			let patient = patients[i];
 			
 			matchesQuery = (patient.lastName == lastName) && (patient.firstName == firstName) && (patient.middleNames == middleNames);
-			console.log(matchesQuery);
 						   
 		
 			
 			if(matchesQuery) {
-				delete patients[i];
-				console.log("Patient has been removed from the records at" + (i).toString());
+				//delete patients[i];
+				patients.splice(i, 1);
 				res.send("Patient has been deleted from the records");
 			}
 		
@@ -134,11 +133,12 @@ app.put('/patient/:lastName/:firstName/:middleNames/:age/:height/:notes', (req, 
 		
 		if(matchesQuery) {
 			//Delete patient
-			delete patients[i];
+			patients.splice(i, 1);
 			
 			//Push edited object back into array
 			patients.push(newPatient);
-			console.log("");
+			console.log("Patient data has been edited in the records");
+			res.send("Patient data has been edited in the records");
 			
 			return;
 		}
