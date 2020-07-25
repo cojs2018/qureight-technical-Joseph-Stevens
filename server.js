@@ -44,19 +44,19 @@ app.get('/patients', (req, res) => {
 
 //Get patients based on query
 app.get('/patient/:lastName/:firstName/:middleNames/:age/:height/:notes', (req, res) => {
+	
 	//Read all search criteria
 	const lastName = req.params.lastName.replace('"', '').replace('"', '');
 	const firstName = req.params.firstName.replace('"', '').replace('"', '');
 	const middleNames = req.params.middleNames.replace('"', '').replace('"', '');
-	const age = parseInt(req.params.age);
-	const height = parseInt(req.params.height);
+	const age = parseInt(req.params.age.replace('"', '').replace('"', ''));
+	const height = parseInt(req.params.height.replace('"', '').replace('"', ''));
 	const notes = req.params.notes.replace('"', '').replace('"', '');
 	
 	//Search patients for search criteria
-	let patientsQuery = []
+	let patientsQuery = [];
 	for (let i = 0; i < patients.length; i++) {
-		let patient = patients[i]
-		console.log(patient)
+		let patient = patients[i];
 		matchesQuery = patient.lastName == lastName ||
 					   patient.firstName == firstName ||
 					   patient.middleNames == middleNames ||
@@ -81,20 +81,19 @@ app.get('/patient/:lastName/:firstName/:middleNames/:age/:height/:notes', (req, 
 //Delete a selected patient
 app.delete('/patient/:lastName/:firstName/:middleNames', (req, res) => {
 	try {
+		
 		//Read all search criteria
 		const lastName = req.params.lastName.replace('"', '').replace('"', '');
 		const firstName = req.params.firstName.replace('"', '').replace('"', '');
 		const middleNames = req.params.middleNames.replace('"', '').replace('"', '');
 		
-		console.log(lastName);
 			
 		for(let i = 0; i < patients.length; i++){
 			
 			let patient = patients[i];
 			
+			//Check if patient exists in records
 			matchesQuery = (patient.lastName == lastName) && (patient.firstName == firstName) && (patient.middleNames == middleNames);
-						   
-		
 			
 			if(matchesQuery) {
 				//delete patients[i];
@@ -116,10 +115,11 @@ app.put('/patient/:lastName/:firstName/:middleNames/:age/:height/:notes', (req, 
 	const lastName = req.params.lastName.replace('"', '').replace('"', '');
 	const firstName = req.params.firstName.replace('"', '').replace('"', '');
 	const middleNames = req.params.middleNames.replace('"', '').replace('"', '');
-	const age = parseInt(req.params.age);
-	const height = parseInt(req.params.height);
+	const age = parseInt(req.params.age.replace('"', '').replace('"', ''));
+	const height = parseInt(req.params.height.replace('"', '').replace('"', ''));
 	const notes = req.params.notes.replace('"', '').replace('"', '');
 	
+	//Declare new patient object
 	const newPatient = {'lastName': lastName,'firstName': firstName,'middleNames': middleNames, 'age': age, 'height': height, 'notes': notes};
 	
 	//Search patients for search criteria
@@ -127,9 +127,9 @@ app.put('/patient/:lastName/:firstName/:middleNames/:age/:height/:notes', (req, 
 	for (let i = 0; i < patients.length; i++) {
 		let patient = patients[i];
 		
+		//Assumption: First and middle names can not be changed
 		matchesQuery = (patient.firstName == firstName &&
-					    patient.middleNames == middleNames &&
-						patient.lastName == patient.lastName);
+					    patient.middleNames == middleNames);
 		
 		if(matchesQuery) {
 			//Delete patient
